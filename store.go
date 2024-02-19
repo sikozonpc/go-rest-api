@@ -7,12 +7,15 @@ type Storage struct {
 }
 
 type Store interface {
+	// Users
+	CreateUser(u *User) (*User, error)
 	// Projects
 	CreateProject(p *Project) error
 	GetProject(id string) (*Project, error)
 	DeleteProject(id string) error
-	// Users
-	CreateUser(u *User) (*User, error)
+	// Tasks
+	CreateTask(t *Task) (*Task, error)
+	GetTask(id string) (*Task, error)
 }
 
 func NewStore(db *sql.DB) *Storage {
@@ -54,4 +57,26 @@ func (s *Storage) CreateUser(u *User) (*User, error) {
 
 	u.ID = id
 	return u, nil
+}
+
+func (s *Storage) CreateTask(t *Task) (*Task, error) {
+	rows, err := s.db.Exec("INSERT INTO tasks (name, status, project_id, assigned_to) VALUES (?, ?, ?, ?)", t.Name, t.Status, t.ProjectID, t.AssignedToID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := rows.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	t.ID = id
+	return t, nil
+}
+
+func (s *Storage) GetTask(id string) (*Task, error) {
+	var t Task
+	err := s.db.QueryRow("SELECT id, name, status, project_id, assigned_to, createdAt FROM tasks WHERE id = ?", id).Scan(&t.ID, &t.Name, &t.Status, &t.ProjectID, &t.AssignedToID, &t.CreatedAt)
+	return &t, err
 }
