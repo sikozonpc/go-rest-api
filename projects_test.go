@@ -12,7 +12,7 @@ import (
 
 func TestCreateProject(t *testing.T) {
 	// Create a new project
-	ms := &mockStore{}
+	ms := &MockStore{}
 	service := NewProjectService(ms)
 
 	t.Run("should validate if the name is not empty", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestCreateProject(t *testing.T) {
 
 func TestGetProject(t *testing.T) {
 	// Create a new project
-	ms := &mockStore{}
+	ms := &MockStore{}
 	service := NewProjectService(ms)
 
 	t.Run("should return a project", func(t *testing.T) {
@@ -116,7 +116,7 @@ func TestGetProject(t *testing.T) {
 
 func TestDeleteProject(t *testing.T) {
 	// Create a new project
-	ms := &mockStore{}
+	ms := &MockStore{}
 	service := NewProjectService(ms)
 
 	t.Run("should delete the project", func(t *testing.T) {
@@ -136,20 +136,4 @@ func TestDeleteProject(t *testing.T) {
 			t.Errorf("expected status code %d, got %d", http.StatusNoContent, rr.Code)
 		}
 	})
-}
-
-// Mocks
-
-type mockStore struct{}
-
-func (s *mockStore) CreateProject(p *Project) error {
-	return nil
-}
-
-func (s *mockStore) GetProject(id string) (*Project, error) {
-	return &Project{Name: "Super cool project"}, nil
-}
-
-func (s *mockStore) DeleteProject(id string) error {
-	return nil
 }

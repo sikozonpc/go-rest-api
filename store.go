@@ -7,9 +7,12 @@ type Storage struct {
 }
 
 type Store interface {
+	// Projects
 	CreateProject(p *Project) error
 	GetProject(id string) (*Project, error)
 	DeleteProject(id string) error
+	// Users
+	CreateUser(u *User) (*User, error)
 }
 
 func NewStore(db *sql.DB) *Storage {
@@ -36,4 +39,19 @@ func (s *Storage) DeleteProject(id string) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) CreateUser(u *User) (*User, error) {
+	rows, err := s.db.Exec("INSERT INTO users (email, firstName, lastName) VALUES (?, ?, ?)", u.Email, u.FirstName, u.LastName)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := rows.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+
+	u.ID = id
+	return u, nil
 }
