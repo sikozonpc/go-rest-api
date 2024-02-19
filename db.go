@@ -52,6 +52,7 @@ func (s *MySQLStorage) createUsersTable() error {
 			email VARCHAR(255) NOT NULL,
 			firstName VARCHAR(255) NOT NULL,
 			lastName VARCHAR(255) NOT NULL,
+			password VARCHAR(255) NOT NULL,
 			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 			PRIMARY KEY (id),
@@ -69,7 +70,7 @@ func (s *MySQLStorage) createProjectsTable() error {
 			name VARCHAR(255) NOT NULL,
 			createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-			PRIMARY KEY (id),
+			PRIMARY KEY (id)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	`)
 

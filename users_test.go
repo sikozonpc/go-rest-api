@@ -51,12 +51,23 @@ func TestValidateUserPayload(t *testing.T) {
 			want: errLastNameRequired,
 		},
 		{
+			name: "should return error if the password is empty",
+			args: args{
+				user: &User{
+					Email:     "joe@mail.com",
+					FirstName: "John",
+				},
+			},
+			want: errLastNameRequired,
+		},
+		{
 			name: "should return nil if all fields are present",
 			args: args{
 				user: &User{
 					Email:     "joe@mail.com",
 					FirstName: "John",
 					LastName:  "Doe",
+					Password:  "password",
 				},
 			},
 			want: nil,
@@ -72,16 +83,17 @@ func TestValidateUserPayload(t *testing.T) {
 	}
 }
 
-func TestCreateUs(t *testing.T) {
+func TestCreateUser(t *testing.T) {
 	// Create a new project
 	ms := &MockStore{}
 	service := NewUserService(ms)
 
 	t.Run("should validate if the email is not empty", func(t *testing.T) {
-		payload := &CreateUserPayload{
+		payload := &RegisterPayload{
 			Email:     "",
 			FirstName: "John",
 			LastName:  "Doe",
+			Password:  "password",
 		}
 
 		b, err := json.Marshal(payload)
@@ -89,7 +101,7 @@ func TestCreateUs(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(b))
+		req, err := http.NewRequest(http.MethodPost, "/users/register", bytes.NewBuffer(b))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -97,7 +109,7 @@ func TestCreateUs(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/users", service.handleCreateUser)
+		router.HandleFunc("/users/register", service.handleUserRegister)
 
 		router.ServeHTTP(rr, req)
 
@@ -117,10 +129,11 @@ func TestCreateUs(t *testing.T) {
 	})
 
 	t.Run("should create a user", func(t *testing.T) {
-		payload := &CreateUserPayload{
+		payload := &RegisterPayload{
 			Email:     "joe@mail.com",
 			FirstName: "John",
 			LastName:  "Doe",
+			Password:  "password",
 		}
 
 		b, err := json.Marshal(payload)
@@ -128,7 +141,7 @@ func TestCreateUs(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		req, err := http.NewRequest(http.MethodPost, "/users", bytes.NewBuffer(b))
+		req, err := http.NewRequest(http.MethodPost, "/users/register", bytes.NewBuffer(b))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -136,7 +149,7 @@ func TestCreateUs(t *testing.T) {
 		rr := httptest.NewRecorder()
 		router := mux.NewRouter()
 
-		router.HandleFunc("/users", service.handleCreateUser)
+		router.HandleFunc("/users/register", service.handleUserRegister)
 
 		router.ServeHTTP(rr, req)
 
