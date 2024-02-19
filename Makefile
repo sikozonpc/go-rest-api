@@ -1,8 +1,8 @@
 run: build
-	@./bin/chat
+	@./bin/api
 
 build:
-	@go build -o bin/chat
+	@go build -o bin/api
 
 test:
 	@go test -v ./...
